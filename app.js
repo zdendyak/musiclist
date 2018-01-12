@@ -12,6 +12,11 @@ const expressSession = require('express-session')({
   resave: false,
   saveUninitialized: false,
 });
+const webpack = require('webpack');
+const webpackConfig = require('./webpack.config');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const webpackHotMiddleware = require('webpack-hot-middleware');
+
 const User = require('./models/user');
 
 const index = require('./routes/index');
@@ -28,7 +33,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -38,9 +43,23 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
+// Webpack Server
+const webpackCompiler = webpack(webpackConfig);
+app.use(webpackDevMiddleware(webpackCompiler, {
+  publicPath: webpackConfig.output.publicPath,
+  stats: {
+    colors: true,
+    chunks: true,
+    'errors-only': true,
+  },
+}));
+app.use(webpackHotMiddleware(webpackCompiler, {
+  log: console.log,
+}));
+
 app.use('/api', api);
 app.use('/api/users', users);
+app.use('/*', index);
 
 // Configure Passport
 passport.use(new LocalStrategy(User.authenticate()));
