@@ -10,6 +10,8 @@ const User = new Schema({
   lastName: String,
   email: String,
   passwordReset: { type: String, select: false },
+  albums: [Schema.Types.Mixed],
+  artists: [Schema.Types.Mixed],
 });
 
 User.plugin(passportLocalMongoose);

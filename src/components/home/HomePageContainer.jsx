@@ -1,25 +1,30 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { incrementProgress, decrementProgress } from '../../actions/progress';
+import { getRandomAlbum } from '../../actions/albums';
 
 import HomePage from './HomePage';
 
-export function HomePageContainer(props) {
-  const { decrementProgressAction, incrementProgressAction } = props;
-  return (
-    <HomePage
-      incrementFunction={incrementProgressAction}
-      decrementFunction={decrementProgressAction}
-    />
-  );
+export class HomePageContainer extends React.Component {
+  componentWillMount() {
+    const { getRandomAlbumFunction } = this.props;
+    getRandomAlbumFunction();
+  }
+
+  render() {
+    const { randomAlbum } = this.props;
+    return (
+      <HomePage
+        randomAlbum={randomAlbum}
+      />
+    );
+  }
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    incrementProgressAction: incrementProgress,
-    decrementProgressAction: decrementProgress,
-  }, dispatch);
-}
+const mapDispatchToProps = dispatch => bindActionCreators({
+  getRandomAlbumFunction: getRandomAlbum,
+  dispatch,
+}, dispatch);
+const mapStateToProps = state => ({ randomAlbum: state.random });
 
-export default connect(null, mapDispatchToProps)(HomePageContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(HomePageContainer);

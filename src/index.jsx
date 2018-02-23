@@ -27,7 +27,7 @@ const renderApp = (Component) => {
       <Provider store={Store}>
         <div>
           <Component />
-          <DevTools />
+          { /* <DevTools /> */ }
         </div>
       </Provider>
     </AppContainer>,
